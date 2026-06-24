@@ -1,0 +1,30 @@
+name: 'PR Consistency Checks'
+on:
+  workflow_call:
+jobs:
+  pr-title-check:
+    name: "PR Title Check"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      checks: write
+      pull-requests: read
+    steps:
+      - name: "PR Title Check"
+        uses: Slashgear/action-check-pr-title@v4.3.0
+        with:
+          regexp: '^[A-Z]{1,5}-[0-9]{1,5}'
+
+  pr-description-check:
+    name: "PR Description Check"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      checks: write
+      pull-requests: read
+    steps:
+      - name: "PR Description Check"
+        if: ${{ github.event.pull_request.body == '' }}
+        run: |
+          echo PR description cannot be empty!
+          exit 1
