@@ -1,0 +1,57 @@
+# ArgoCD GitHub App Repository Credentials
+# ========================================
+# Creates an ArgoCD repo-creds Secret from AWS Secrets Manager.
+# ArgoCD automatically picks up Secrets with the label
+# argocd.argoproj.io/secret-type: repo-creds and uses them to
+# authenticate against matching repositories.
+
+# Expected AWS Secrets Manager secret shape:
+#   Path: infra/bounded-contexts/argocd/github_app
+#   JSON keys:
+#     - url: "https://github.com/361-by-finca"      # org-level prefix for repo-creds
+#     - githubAppID: "123456"                        # GitHub App ID
+#     - githubAppInstallationID: "12345678"          # installation ID
+#     - githubAppPrivateKey: "-----BEGIN RSA..."     # PEM private key
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: github-app-repo-creds
+  namespace: argocd
+  labels:
+    app.kubernetes.io/component: secrets-sync
+    app.kubernetes.io/part-of: argocd-shared-services
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: aws-secrets-manager
+  target:
+    name: github-app-repo-creds
+    template:
+      metadata:
+        labels:
+          argocd.argoproj.io/secret-type: repo-creds
+      data:
+        url: "{{ .url }}"
+        githubAppID: "{{ .githubAppID }}"
+        githubAppInstallationID: "{{ .githubAppInstallationID }}"
+        githubAppPrivateKey: |
+          {{ .githubAppPrivateKey }}
+  data:
+    - secretKey: url
+      remoteRef:
+        key: infra/bounded-contexts/argocd/github_app
+        property: url
+    - secretKey: githubAppID
+      remoteRef:
+        key: infra/bounded-contexts/argocd/github_app
+        property: githubAppID
+    - secretKey: githubAppInstallationID
+      remoteRef:
+        key: infra/bounded-contexts/argocd/github_app
+        property: githubAppInstallationID
+    - secretKey: githubAppPrivateKey
+      remoteRef:
+        key: infra/bounded-contexts/argocd/github_app
+        property: githubAppPrivateKey
