@@ -13,7 +13,7 @@
 #     - githubAppInstallationID: "12345678"          # installation ID
 #     - githubAppPrivateKey: "-----BEGIN RSA..."     # PEM private key
 ---
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: github-app-repo-creds
