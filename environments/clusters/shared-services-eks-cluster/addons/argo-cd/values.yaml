@@ -1,0 +1,12 @@
+global:
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+      effect: NoSchedule
+
+redis:
+  secretInit:
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+        effect: NoSchedule
